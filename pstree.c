@@ -149,11 +149,73 @@ treenode* get_proc() {
           itr_list->right = tree_get_node(pid, ppid, p_name);
           itr_list = itr_list->right;
       }
-
   }
-
 }
 
+
+FILE* open_proc_status(const char* restrict pid) {
+    char path[256] = "/proc/";
+    if( strncat(path, pid, sizeof(path)) == -1) {
+        // TODO error handle
+    }
+    if( strncat(path, "/status", sizeof(path)) == -1) {
+        // TODO error handle
+    }
+    FILE* status = fopen(path, "r");
+    if( !status ) {
+        // TODO error handle
+    }
+    return status;
+}
+
+
+char* get_proc_info(FILE* proc_status, const char* key) {
+    char linebuff[1024] = {0};
+    while( fgets(linebuff, sizeof(linebuff), proc_status) ) {
+        char* first_occ = NULL;
+        if ( (first_occ = strchr(linebuff, key)) == NULL) {
+            // TODO
+        } else {
+           break;
+        }
+    }
+    return get_value_from_line(linebuff);
+}
+
+
+int read_proc_ppid(FILE* proc_status) {
+    char* result = get_proc_info(proc_status, "PPid");
+    if ( result == NULL ) {
+        return -1;
+    }
+#ifndef SAFE
+    return strtol(result);
+#else
+    return atol(result);
+#endif
+}
+
+char* get_value_from_line(char* str) {
+    CHECK_PTR_NULL(str);
+    const char* dem = ": ";
+    char* ptr_arr[5] = {0};
+    ptr_arr[0] = strtok(str, dem );
+    for( int i = 1; ptr_arr[i]; ++i ) {
+        ptr_arr[i] = strtok(NULL, dem);
+    }
+
+    if( ptr_arr[1] ) {
+        char* tmp = calloc(strlen(ptr_arr[1]) + 1, sizeof(char));
+        if( !tmp ) return NULL;
+        if (strncpy( tmp, ptr_arr, strlen(ptr_arr[1]) + 1) == -1 ) {
+            free(tmp);
+            // TODO
+        } else {
+            return tmp;
+        }
+
+    }
+}
 
 
 
