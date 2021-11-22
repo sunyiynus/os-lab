@@ -9,10 +9,6 @@
 
 
 #define VERSION "pstree 0.0.1 copyright by uttep.\n"
-#define RED \33[31m
-#define BLUE \33[34m
-#define GREEN \33[32m
-#define CEND \33[0m
 
 #define pdebug(str) printf("\33[32m[Debug]\33[0m: %s \n", #str)
 #define psdebug(str) printf("\33[32m[Debug]\33[0m: %s var is %s\n", #str, str)
@@ -820,17 +816,6 @@ int print_node_t(const treenode* const node, int indent) {
     }
     printf("{%s %d %d}\n", node->proc_name, node->pid, node->ppid);
     return 0;
-}
-
-
-int print_son(const treenode* const node, int indent){
-
-}
-
-int print_brother(const treenode* const node, int indent){
-    print_node_t(node, indent);
-
-    print_brother(node, indent);
 }
 
 
