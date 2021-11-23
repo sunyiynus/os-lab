@@ -771,9 +771,11 @@ void set_output_state(int argc, char* argv[]) {
               break;
           case 'V':
               printf(VERSION);
+              exit(0);
               break;
           default:
               printf("pstree [-npV] [-n] [-p] [-V] \n");
+              exit(0);
               break;
       }
     }
@@ -834,11 +836,18 @@ int print_tree_t(const treenode* const root, int indent) {
 
 
 int _main(int argc, char* argv[]) {
+    set_output_state(argc, argv);
+    
     auto_treefree treenode* tree = get_proc();
 
     auto_treefree treenode* newtree = construct_tree(tree);
     auto_treefree treenode* kthreadtree = newtree->right;
     newtree->right = NULL;
+    if (outputstate == 1) {
+        // TODO
+    } else if( outputstate == 2 ) {
+        // TODO
+    }
     
     print_tree_t(newtree, 0);
     
