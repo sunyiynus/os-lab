@@ -3,13 +3,13 @@ FLAG = -g -Wall -std=c11
 DEBUGFLAG=-DDEBUG
 
 
-pstree:pstree_testing.c
-	gcc ${FLAG} -o pstree pstree_testing.c
+pstree:pstree.c
+	gcc ${FLAG} -o pstree pstree.c
 
 
 .PHONY: test
 test:
-	$(CC) $(FLAG) $(DEBUGFLAG) -o test_pstree pstree_testing.c
+	$(CC) $(FLAG) $(DEBUGFLAG) -o test_pstree pstree.c
 	./test_pstree
 
 .PHONY: clean
