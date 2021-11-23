@@ -183,7 +183,9 @@ void _queue_push_back(Queue* self, void* data) {
     self->tail->next = tmp_ptr;
     self->tail = tmp_ptr;
     (self->size)++;
+#ifdef DEBUG
     printf("Queue Size: %d \n", self->size);
+#endif
 }
 
 
@@ -202,7 +204,9 @@ void* _queue_pop_front(Queue* self) {
     tmp_ptr->data = NULL;
     free(tmp_ptr);
     (self->size)--;
+#ifdef DEBUG
     printf("Queue Size: %d \n", self->size);
+#endif
     return tmp_data;
 }
 
@@ -391,7 +395,9 @@ treenode* get_proc() {
       errno = 0;
       dp = readdir(dirp);
       if( !dp ) break;
+#ifdef DEBUG
       psdebug(dp->d_name);
+#endif
 
       if( strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 ) continue;
 
@@ -431,7 +437,9 @@ FILE* open_proc_status(const char* restrict pid) {
     }
     FILE* status = fopen(path, "r");
     if( !status ) {
+#ifdef DEBUG
         pwarning(Open file failed...);
+#endif
     }
     return status;
 }
@@ -444,9 +452,13 @@ char* get_proc_info(FILE* proc_status, const char* key) {
         char* first_occ = NULL;
         int valid_len = strcspn(linebuff, "\n");
         linebuff[valid_len] = '\0';
+#ifdef DEBUG
         psdebug(linebuff);
+#endif
         if ( (first_occ = strstr(linebuff, key)) == NULL) {
+#ifdef DEBUG
             pdebug(Str not found...); 
+#endif
         } else {
            break;
         }
@@ -481,24 +493,32 @@ char* get_value_from_line(const char* const str) {
     char tmp_srcbuf[1024] = {0};
     strncpy(tmp_srcbuf, str, strlen(str));
 
+#ifdef DEBUG
     psdebug(tmp_srcbuf);
-    const char dem[] = ": ";
+#endif
+    const char dem[] = ": \t";
     char* ptr_arr[5] = {0};
     char* tmp_token = strtok(tmp_srcbuf, dem);
+#ifdef DEBUG
     psdebug(tmp_token);
+#endif
     ptr_arr[0] = tmp_token;
     for( int i = 1; tmp_token; ++i ) {
         tmp_token = strtok(NULL, dem);
         ptr_arr[i] = tmp_token;
+#ifdef DEBUG
         psdebug(ptr_arr[i]);
         psdebug(tmp_token);
+#endif
     }
 
     if( ptr_arr[1] ) {
         char* tmp = calloc(strlen(ptr_arr[1]) + 1, sizeof(char));
         if( !tmp ) return NULL;
         strncpy( tmp, ptr_arr[1], strlen(ptr_arr[1]));
+#ifdef DEBUG
         psdebug(tmp);
+#endif
         return tmp;
     } else {
         return NULL;
@@ -656,7 +676,9 @@ treenode* tree_search(treenode* root, cmp_t cmp, int* id) {
     while( !queue->is_empty(queue) ) {
 
         treenode* tmp_node_ptr = queue->pop_front(queue);
+#ifdef DEBUG
         print_node(tmp_node_ptr);
+#endif
         
         if( tmp_node_ptr->right != NULL ) {
             queue->push_back(queue, tmp_node_ptr->right); 
@@ -720,31 +742,10 @@ void print_node(const treenode* const node) {
 
 void TEST_ConstructTree() {
     auto_treefree treenode* tree = get_proc();
-    //tree->left = NULL;
-    int i = 1;
-    const treenode* const result = tree_search(tree, cmp_pid, &i);
-    print_node(result);
-    /*
-    treenode* tmp = list_search_pid(tree, 1);
-    assert(tmp != NULL);
-    assert(tmp->pid == 1);
-    print_node(tmp);
-    free(tmp);
-    */
-    treenode* tmp = NULL;
 
-    /* 
-     * List Pop Front Test
-    for( int i = 0; i < 200; ++i ) {
-    tmp = list_pop_front(tree);
-    assert( tmp != NULL );
-    printf("%d ", strlen(tmp->proc_name));
-    print_node(tmp);
-    list_push_back(tree, tmp);
-    }
-
-    */
     auto_treefree treenode* newtree = construct_tree(tree);
+    auto_treefree treenode* kthreadtree = newtree->right;
+    newtree->right = NULL;
     
     print_tree_t(newtree, 0);
     
@@ -823,9 +824,26 @@ int print_tree_t(const treenode* const root, int indent) {
     if( !root ) return -1;
     print_node_t(root, indent);
 
-    print_tree_t(root->left, indent+2);
+    print_tree_t(root->left, indent+4);
     print_tree_t(root->right, indent);
     return 0;
+}
+
+
+/* main function */
+
+
+int _main(int argc, char* argv[]) {
+    auto_treefree treenode* tree = get_proc();
+
+    auto_treefree treenode* newtree = construct_tree(tree);
+    auto_treefree treenode* kthreadtree = newtree->right;
+    newtree->right = NULL;
+    
+    print_tree_t(newtree, 0);
+    
+    /* remove double pointing */
+    tree->left = NULL;
 }
 
 
@@ -840,7 +858,8 @@ int main(int argc, char* argv[]) {
     //TEST_tree_get_node_normal();
     //TEST_read_proc_info();
     //TEST_queue();
-    TEST_ConstructTree();
+    //TEST_ConstructTree();
 #endif
+    return _main(argc, argv);
   
 }
