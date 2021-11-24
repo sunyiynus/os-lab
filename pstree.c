@@ -7,13 +7,13 @@
 #include <errno.h>
 
 
-
 #define VERSION "pstree 0.0.1 copyright by uttep.\n"
 
 #define pdebug(str) printf("\33[32m[Debug]\33[0m: %s \n", #str)
 #define psdebug(str) printf("\33[32m[Debug]\33[0m: %s var is %s\n", #str, str)
 #define pwarning(str) printf("\33[31m[Warning]\33[0m: %s \n", #str)
 #define pinfo(str) printf("[Info]: %s \n", #str)
+
 
 /* Useful typedef */
 
@@ -40,6 +40,7 @@ treenode* tree_get_node(int pid, int ppid, const char* procname);
 int tree_destory(treenode** self);
 int tree_free_por(treenode* node);
 
+
 /* RAII in c */
 
 /* Char Str free */
@@ -61,13 +62,14 @@ __attribute__((always_inline))
         tree_free_por( *(treenode**)tree );
     }
 
+
+
 /* paraper output format */
 static short outputstate = 0;
 static int indent = 0;
 void set_output_state(int argc, char* argv[]);
 int print_tree_t(const treenode* const root, int indent);
 void print_version();
-
 
 
 /* read dir */
@@ -109,6 +111,7 @@ void* _queue_pop_front(Queue* queue);
 void _queue_push_back(Queue* self, void* data);
 bool _queue_is_empty(Queue* self);
 
+
 /* Queue IMP */
 struct _node {
     void* data;
@@ -126,7 +129,6 @@ struct _queue{
 
     int size;
 };
-
 
 
 void QueueInitialize(Queue** queue) {
@@ -172,7 +174,6 @@ void QueueDestory(Queue** queue, free_t data_free ) {
     free(*queue);
     *queue = NULL;
 }
-
 
 
 void _queue_push_back(Queue* self, void* data) {
@@ -352,10 +353,9 @@ int list_free(treenode* node) {
 }
 #endif
 
+
 #ifdef DEBUG
 /* unit test */
-
-
 
 void TEST_tree_get_node_normal(void) {
     printf("\n-------%s \n", __func__);
@@ -370,9 +370,8 @@ void TEST_tree_get_node_normal(void) {
     tree_destory(&tmp);
     assert(tmp == NULL);
 }
-
-
 #endif
+
 
 /******** Read Proc fs  ********/
 
@@ -487,7 +486,6 @@ int read_proc_pid(FILE* proc_status) {
 }
 
 
-
 char* get_value_from_line(const char* const str) {
     if( !str ) return NULL;
     char tmp_srcbuf[1024] = {0};
@@ -533,6 +531,7 @@ void debug_PrintProcess(const treenode* node) {
     printf("% s : %d \n", node->proc_name, node->pid);
 }
 
+
 void debug_PrintAllProcess(const treenode* tree) {
     treenode** tmp_itr = &(tree->right);
     while( *tmp_itr != NULL ) {
@@ -575,8 +574,6 @@ void TEST_read_proc_info(void) {
     
     //tree_destory(&tmp_node_list);
 }
-
-
 #endif
 
 
@@ -585,21 +582,18 @@ void TEST_read_proc_info(void) {
 /* testing RAII imp by __attribute__(())
  *
  */
-
 void Test_Raii() {
     auto_treefree treenode* tmp;
     tree_initialize(&tmp);
     tmp->right = tree_get_node(1,1,"Pname");
 }
-
-
 #endif
 
 
 /*********** Construct tree IMP **********/
 
-typedef bool(*cmp_t)(void*, void*);
 
+typedef bool(*cmp_t)(void*, void*);
 
 bool cmp_pid(void* a, void* b) {
   treenode* tmp_node = (treenode*)a;
@@ -732,8 +726,8 @@ treenode* construct_tree(treenode* list) {
   return root;
 }
 
-#ifdef DEBUG
 
+#ifdef DEBUG
 void print_node(const treenode* const node) {
     if( !node ) return;
     printf("\33[32m Tree Node:\33[0m %s Pid: %d, PPid: %d\n",
@@ -752,10 +746,11 @@ void TEST_ConstructTree() {
     /* remove double pointing */
     tree->left = NULL;
 }
-
 #endif
 
+
 /******** Output IMP  ********/
+
 
 void set_output_state(int argc, char* argv[]) {
     int optchar = 0;
@@ -790,7 +785,6 @@ void set_output_state(int argc, char* argv[]) {
  * |   \--= 01114 ...    B   LSSG 01114 ...
  * \--- 01115 ...        LSSN 01115 ...
  */
-
 
 
 #define PRINT_FORMAT "%d %s \n"
@@ -854,12 +848,6 @@ int _main(int argc, char* argv[]) {
     /* remove double pointing */
     tree->left = NULL;
 }
-
-
-
-
-
-/* test */
 
 
 int main(int argc, char* argv[]) {
