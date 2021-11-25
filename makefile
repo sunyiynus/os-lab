@@ -1,5 +1,5 @@
 CC = clang
-FLAG = -g -Wall -std=c11
+FLAG = -g -Wall -o2 -std=c11
 DEBUGFLAG=-DDEBUG
 
 
