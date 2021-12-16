@@ -829,7 +829,7 @@ int print_tree_t(const treenode* const root, int indent) {
 /* main function */
 
 
-int _main(int argc, char* argv[]) {
+int __main(int argc, char* argv[]) {
     set_output_state(argc, argv);
     
     auto_treefree treenode* tree = get_proc();
@@ -857,6 +857,6 @@ int main(int argc, char* argv[]) {
     //TEST_queue();
     //TEST_ConstructTree();
 #endif
-    return _main(argc, argv);
+    return __main(argc, argv);
   
 }
